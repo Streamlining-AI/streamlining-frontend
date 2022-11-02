@@ -1,0 +1,38 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: react-docker #name deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: react-docker
+  template:
+    metadata:
+      labels:
+        app: react-docker
+    spec:
+      containers:
+      - name: react-docker # name container
+        image: 192.168.49.2:30001/test-react
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: regcred
+---
+#Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: load-balancer-website
+  labels:
+    app: react-docker
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+    nodePort: 31000
+  selector:
+    app: react-docker
