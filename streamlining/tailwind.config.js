@@ -9,7 +9,7 @@ module.exports = {
         'sl-orange' : '#FF985F',
       },
       fontFamily: {
-        inter: ['Jua', 'Inter'],
+        Jua: ['Jua', 'Inter'],
       },
     },
   },

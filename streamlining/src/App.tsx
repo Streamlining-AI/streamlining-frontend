@@ -1,21 +1,24 @@
-import React from 'react';
+import React from "react";
 // eslint-disable-next-line
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
 //Component
-import Navbar from './components/Navbar';
+import Navbar from "./components/Navbar";
 
 // eslint-disable-next-line
-import { BrowserRouter as Router , Route } from 'react-router-dom';
-import Login from './pages/ Login';
-
-const App : React.FC = () => {
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Login from "./pages/ Login";
+import Register from "./pages/Register";
+const App: React.FC = () => {
   return (
     <Router>
-      <Navbar/>
-      <Login/>
+      <Navbar />
+      <Routes>
+        <Route path="/Login" element={<Login />} />
+        <Route path="/Register" element={<Register />} />
+      </Routes>
     </Router>
   );
-}
+};
 
 export default App;
