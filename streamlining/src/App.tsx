@@ -11,17 +11,42 @@ import Login from "./pages/ Login";
 import Register from "./pages/Register";
 import Modelpage from "./pages/Modelpage";
 import UploadModel from "./pages/UploadModel";
+import ProtectedRoute from "./components/ProtectedRoute";
+import CallbackGithub from "./components/CallbackGithub";
+import Dashboard from "./pages/Dashboard";
+import { Toaster } from "react-hot-toast";
+import Home from "./pages/Home";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/Login" element={<Login />} />
-        <Route path="/Register" element={<Register />} />
-        <Route path="/Model" element={<Modelpage/>}/>
-        <Route path="/UploadModel" element={<UploadModel/>}/>
+
+        <Route path="/" element={<Home/>}/>        
+        <Route path="/login/github/:status" element={<CallbackGithub />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/model/:id" element={<Modelpage />} />
+
+        <Route
+          path="/uploadModel"
+          element={
+            <ProtectedRoute>
+              <UploadModel />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
+      <Toaster position="top-right"/>
     </Router>
   );
 };

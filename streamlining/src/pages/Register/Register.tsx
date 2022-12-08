@@ -1,29 +1,72 @@
 import React from "react";
-
+import { useForm ,SubmitHandler} from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { useUser } from "../../state/user/hooks";
+import { FormRegister } from "./type";
 const Register: React.FC = () => {
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormRegister>();
+
+
+  const {handleRegister} = useUser();
+
+  const onSubmit: SubmitHandler<FormRegister> = data => {
+    try {
+      handleRegister(data);
+      navigate('/login');
+    } catch (error) {
+      
+    }
+  };
+
+
   return (
     <div className="w-screen h-screen ">
       <div className="flex flex-col h-full w-full justify-center text-center font-bold">
-        <form className="flex flex-col  w-96 border-4 border-sl-orange border-opacity-50 m-auto pl-20 pr-20 pt-12 pb-12 gap-y-4 rounded-lg">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col  w-96 border-4 border-sl-orange border-opacity-50 m-auto pl-20 pr-20 pt-12 pb-12 gap-y-4 rounded-lg">
           <h1 className="text-6xl">SignUp</h1>
           <input
             type="text"
-            name="username"
             placeholder="username"
             className="flex w-full h-10 border-4 border-sl-orange border-opacity-50 rounded-lg p-2"
+            {...register('username', { required: { value: true, message: 'Username is required' } })}
           />
+          {errors?.username && (
+            <div className=" text-base font-small text-red-600">* {errors.username.message}</div>
+          )}
           <input
             type="password"
-            name="password"
             placeholder="password"
             className="flex w-full h-10 border-4 border-sl-orange border-opacity-50 rounded-lg p-2"
+            {...register('password', {
+              required: { value: true, message: 'Password is required' },
+            })}
           />
+           {errors?.password && (
+            <div className=" text-base font-small text-red-600">* {errors.password.message}</div>
+          )}
           <input
             type="password"
-            name="cf_password"
             placeholder="confirm password"
             className="flex w-full h-10 border-4 border-sl-orange border-opacity-50 rounded-lg p-2"
+            {...register('cf_password', {
+              required: { value: true, message: 'ConfirmPassword is required' },
+              validate: (val: string) => {
+                if (watch('password') !== val) {
+                  return "Your passwords do no match";
+                }
+              }
+            })}
           />
+          {errors?.cf_password && (
+            <div className=" text-base font-small text-red-600">* {errors.cf_password.message}</div>
+          )}
+          
           <button
             type="submit"
             className="w-full bg-sl-orange bg-opacity-50 rounded-lg p-4 text-white text-xl"
@@ -41,7 +84,7 @@ const Register: React.FC = () => {
               privacy policy.
             </a>
           </span>
-          <a href="/Login" className="text-sm underline text-right">Already exist?</a>
+          <Link to="/login" className="text-sm underline text-right">Already exist?</Link>
         </form>
       </div>
     </div>

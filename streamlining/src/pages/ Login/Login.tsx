@@ -1,23 +1,60 @@
 import React from "react";
-
+import { useForm,SubmitHandler } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { useUser } from "../../state/user/hooks";
+import { FormLogin } from "./type";
 const Login: React.FC = () => {
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormLogin>();
+
+  const {handleLogin,handleLoginGithub} = useUser();
+  // Login
+  const onSubmit: SubmitHandler<FormLogin> =async (data) => {
+    try {
+      await handleLogin(data);
+      navigate('/dashboard');
+    } catch (error) {
+      
+    }
+  };
+
+  // GithubLogin
+  const GithubLogin = async () => {
+    await handleLoginGithub()
+    const res = JSON.parse(localStorage.getItem('app_user') || '')
+    localStorage.removeItem('app_user');
+    window.location.href = res.redirectURL;
+  }
+  
   return (
     <div className="w-screen h-screen ">
       <div className="flex flex-col h-full w-full justify-center text-center font-bold">
-        <form className="flex flex-col w-96 border-4 border-sl-orange border-opacity-50 m-auto pl-20 pr-20 pt-12 pb-12 gap-y-4 rounded-lg">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-96 border-4 border-sl-orange border-opacity-50 m-auto pl-20 pr-20 pt-12 pb-12 gap-y-4 rounded-lg">
           <h1 className="text-6xl">SignIn</h1>
           <input
             type="text"
-            name="username"
             placeholder="username"
             className="flex w-full h-10 border-4 border-sl-orange border-opacity-50 rounded-lg p-2"
+            {...register('username', { required: { value: true, message: 'Username is required' } })}
           />
+          {errors?.username && (
+            <div className=" text-base font-small text-red-600">* {errors.username.message}</div>
+          )}
           <input
             type="password"
-            name="password"
             placeholder="password"
             className="flex w-full h-10 border-4 border-sl-orange border-opacity-50 rounded-lg p-2"
+            {...register('password', {
+              required: { value: true, message: 'Password is required' },
+            })}
           />
+           {errors?.password && (
+            <div className=" text-base font-small text-red-600">* {errors.password.message}</div>
+          )}
           <button
             type="submit"
             className="w-full bg-sl-orange bg-opacity-50 rounded-lg p-4 text-white text-xl"
@@ -30,8 +67,9 @@ const Login: React.FC = () => {
             <div className="flex-grow border-t border-4 border-sl-orange border-opacity-50 rounded-lg"></div>
           </div>
           <button
-            type="submit"
+            type="button"
             className="flex w-full bg-black rounded-lg p-4 text-white justify-center"
+            onClick={GithubLogin}
           >
             <svg
               className="w-6 h-6 mr-2"
@@ -60,7 +98,7 @@ const Login: React.FC = () => {
               privacy policy.
             </a>
           </span>
-          <a href="/Register" className="text-sm underline text-right">Sign Up?</a>
+          <Link to="/register" className="text-sm underline text-right">Sign Up?</Link>
         </form>
       </div>
     </div>
