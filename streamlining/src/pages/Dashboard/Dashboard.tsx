@@ -5,8 +5,8 @@ const Dashboard: React.FC = () => {
     {
       imgUrl:
         "https://bucketeer-be99e627-94e7-4e5b-a292-54eeb40ac303.s3.amazonaws.com/public/models_models_cover_image/8faf1a87-e796-4ee5-83e1-385184220187/Screenshot_from_2022-06-17_13-12-.png",
-      name: "dsaasdsaasd",
-      author: "dsadsadasdsa",
+      name: "example",
+      author: "example",
       desciption:
         "example",
     },
@@ -14,24 +14,24 @@ const Dashboard: React.FC = () => {
     {
       imgUrl:
         "https://bucketeer-be99e627-94e7-4e5b-a292-54eeb40ac303.s3.amazonaws.com/public/models_models_cover_image/8faf1a87-e796-4ee5-83e1-385184220187/Screenshot_from_2022-06-17_13-12-.png",
-      name: "dsaasdsaasd",
-      author: "dsadsadasdsa",
+      name: "example",
+      author: "example",
       desciption:
         "example",
     },
     {
       imgUrl:
         "https://bucketeer-be99e627-94e7-4e5b-a292-54eeb40ac303.s3.amazonaws.com/public/models_models_cover_image/8faf1a87-e796-4ee5-83e1-385184220187/Screenshot_from_2022-06-17_13-12-.png",
-      name: "dsaasdsaasd",
-      author: "dsadsadasdsa",
+      name: "example",
+      author: "example",
       desciption:
         "example",
     },
     {
       imgUrl:
         "https://bucketeer-be99e627-94e7-4e5b-a292-54eeb40ac303.s3.amazonaws.com/public/models_models_cover_image/8faf1a87-e796-4ee5-83e1-385184220187/Screenshot_from_2022-06-17_13-12-.png",
-      name: "dsaasdsaasd",
-      author: "dsadsadasdsa",
+      name: "example",
+      author: "example",
       desciption:
         "example",
     },

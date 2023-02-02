@@ -1,5 +1,6 @@
 import React from "react";
 import { useForm ,SubmitHandler} from "react-hook-form";
+import { toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../../state/user/hooks";
 import { FormRegister } from "./type";
@@ -18,9 +19,10 @@ const Register: React.FC = () => {
   const onSubmit: SubmitHandler<FormRegister> = data => {
     try {
       handleRegister(data);
+      toast.success(`Registed! 👏`)
       navigate('/login');
     } catch (error) {
-      
+      toast.error('Something was wrong!')
     }
   };
 

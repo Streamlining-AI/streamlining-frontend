@@ -1,15 +1,20 @@
 import React, { useEffect } from "react";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../../state/user/hooks";
 const CallbackGithub: React.FC = () => {
-  const { handleCallbackGithub } = useUser();
+  const { handleCallbackGithub ,user } = useUser();
   const urlParams = new URLSearchParams(window.location.search);
   let code = urlParams.get("code");
-
+  const navigate = useNavigate();
   useEffect(() => {
-    if (code) {
-      handleCallbackGithub(code);
+    if (user) {
+      navigate('/dashboard',{replace : true});
     }
-  }, [code, handleCallbackGithub]);
+    if (code) {
+      handleCallbackGithub(code)
+    }
+  }, [user]);
   return (
     <>
       {/* {code ? (

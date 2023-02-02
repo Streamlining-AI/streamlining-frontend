@@ -8,7 +8,22 @@ interface Props {
 
 const ClassOutput: React.FC<Props> = ({ name, data, color }) => {
   // var id = setInterval(,10);
-  
+  var id = setInterval(frame, 10);
+  var width = 1;
+  function frame() {
+      var elem = document.getElementById(`percentbar${data}`);
+
+      if (width >= 6 + 94 * (parseInt(data) / 100)) {
+        clearInterval(id);
+        width = 1;
+      } else {
+        width++;
+        if (elem != null) {
+          elem.style.width = width + "%";
+        }
+      }
+    
+  }
   
   return (
     <div className="flex flex-col pr-5 pl-5 gap-y-2">

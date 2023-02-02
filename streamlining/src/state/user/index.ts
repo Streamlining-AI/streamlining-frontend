@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import UserApi from "../../api/user";
 import { Token, User, UserState } from "../types";
 
@@ -17,7 +18,7 @@ export const fetchRegister = createAsyncThunk<
     InsertedID: string;
   },
   { username: string; password: string }
->("user/fetchRegister", async ({ username, password }) => {
+>("/users/register", async ({ username, password }) => {
   const response = await UserApi.register(username, password);
   return response.data;
 });
@@ -32,7 +33,7 @@ export const fetchLogin = createAsyncThunk<
   {
     rejectValue: { error: string };
   }
->("user/fetchLogin", async ({ username, password } , {rejectWithValue}) => {
+>("/users/login", async ({ username, password } , {rejectWithValue}) => {
   try {
     const response = await UserApi.login(username, password);
     return response.data;
@@ -141,6 +142,7 @@ export const userSlice = createSlice({
         fetchRegister.fulfilled,
         (state, { payload: { InsertedID } }) => {
           state.user!.id = InsertedID;
+          
         }
       )
       .addCase(
@@ -148,6 +150,7 @@ export const userSlice = createSlice({
         (state, { payload: { ID, email, token } }) => {
           state.user = { id: ID, username: email };
           state.token = token;
+          toast.success(`Welcome ${email}! 👏`)
         }
       )
 
@@ -167,7 +170,7 @@ export const userSlice = createSlice({
           state.user = { id: ID, username: username };
           state.token = token;
           toast.success(`Welcome ${username}! 👏`)
-          window.location.replace("/dashboard");
+          // window.location.replace("/dashboard"); 
         }
       )
       .addCase(fetchLogout.fulfilled, (state) => {

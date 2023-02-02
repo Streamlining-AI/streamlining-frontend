@@ -1,10 +1,13 @@
+import {  useNavigate } from 'react-router-dom';
 import {CardForm} from '../types'
 
 const Card: React.FC<CardForm> = (props:CardForm) => {
+  const navigate = useNavigate();
   return (
     <button
       type="button"
-      className="flex flex-col bg-pink-600 rounded-xl drop-shadow-xl"
+      className="flex flex-col rounded-xl drop-shadow-xl border-4 p-2"
+      onClick={()=>{navigate('/model/12345')}}
     >
       <img
         alt="modelImg"

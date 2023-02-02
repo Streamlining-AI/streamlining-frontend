@@ -1,9 +1,11 @@
 import * as React from "react";
 import WebcamCapture from "../../utils/camera/camera";
+import BoolInput from "./components/BoolInput";
 import ClassOutput from "./components/ClassOutput";
-
-
-
+import ImageInput from "./components/ImageInput";
+import NumberInput from "./components/NumberInput";
+import SelectorInput from "./components/SelectorInput";
+import TextInput from "./components/TextInput";
 
 const Modelpage: React.FC = () => {
   const colors: string[] = ["#FCD650", "#ADFCAB", "#92D8EE"];
@@ -15,40 +17,31 @@ const Modelpage: React.FC = () => {
     { name: "Rat", data: 15 },
   ];
 
-  // var id = setInterval(frame, 10);
-  // var width = 1;
-  // var a = 0;
-  // function frame() {
-  //   var elem = document.getElementById(`percentbar${dataset[a]}`);
-  //   if (width >= 6 + 94 * (dataset[a] / 100)) {
-  //     clearInterval(id);
-  //     width = 1;
-  //   } else {
-  //     width++;
-  //     if (elem != null) {
-  //       elem.style.width = width + "%";
-  //     }
-  //   }
-  // }
+  
 
   React.useEffect(() => {
-    for (let i = 0; i < dataset.length; i++) {
-      for (let width = 1; width <= 6 + 94 * (dataset[i].data / 100); width++) {
-        var elem = document.getElementById(`percentbar${dataset[i].data}`);
-        elem!.style.width = width + "%";
-      }
-    }
+    // for (let i = 0; i < dataset.length; i++) {
+    //   for (let width = 1; width <= 6 + 94 * (dataset[i].data / 100); width++) {
+    //     var elem = document.getElementById(`percentbar${dataset[i].data}`);
+    //     elem!.style.width = width + "%";
+    //   }
+    // }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <div className="w-screen h-screen pt-16 pl-5 pr-5">
-      <div id="model" className="flex w-full h-2/3 basis-1/2 pt-2">
+      <div id="model" className="flex w-full basis-1/2 pt-2">
         <div id="camera" className="flex flex-col w-1/2">
           <h1 className="text-2xl">Author/Model Name</h1>
-          <div className="flex flex-col w-full p-5 m-auto">
-            <WebcamCapture />
+          <div className="flex flex-col w-full p-5 gap-y-2">
+            {/* <WebcamCapture /> */}
+            <ImageInput />
+            <TextInput />
+            <BoolInput />
+            <NumberInput />
+            <SelectorInput />
           </div>
         </div>
         <div id="output_zone" className="flex flex-col w-1/2 gap-y-3">
