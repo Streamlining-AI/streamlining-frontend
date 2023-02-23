@@ -5,6 +5,7 @@ import ClassOutput from "./components/ClassOutput";
 import ImageInput from "./components/ImageInput";
 import NumberInput from "./components/NumberInput";
 import SelectorInput from "./components/SelectorInput";
+import LogOutput from "./components/LogOutput";
 import TextInput from "./components/TextInput";
 
 const Modelpage: React.FC = () => {
@@ -62,7 +63,7 @@ const Modelpage: React.FC = () => {
           <div id="model_output" className="flex flex-col w-full gap-y-2">
             {/* Box Output */}
             {/* <ClassOutput data={'15'} /> */}
-            {dataset.map((data, index) => {
+            {/* {dataset.map((data, index) => {
               return (
                 <ClassOutput
                   key={index}
@@ -71,7 +72,8 @@ const Modelpage: React.FC = () => {
                   color={colors[index % 3]}
                 />
               );
-            })}
+            })} */}
+            <LogOutput/>
           </div>
 
           <div className="flex items-center gap-x-5">

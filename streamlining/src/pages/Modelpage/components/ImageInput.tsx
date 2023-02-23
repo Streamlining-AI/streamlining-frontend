@@ -1,11 +1,10 @@
 import * as React from "react";
 
 interface Props {
-    name : string;
-    imgUrl : string;
-    description : string;
+  name: string;
+  imgUrl: string;
+  description: string;
 }
-
 
 const ImageInput: React.FC = () => {
   const [imgUploaded, setimgUploaded] = React.useState("");
@@ -20,16 +19,17 @@ const ImageInput: React.FC = () => {
       reader.readAsDataURL(target.files[0]);
     }
   };
+  
   return (
     <div className="flex flex-col gap-y-2 justify-center w-full">
       <h3>variable name</h3>
-      <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+      <label className={"relative flex flex-col items-center justify-center w-full h-80 rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 " + (imgUploaded === "" ? "border-2 border-dashed border-gray-300" : "")}>
         {imgUploaded !== "" ? (
           <img
             id="banner"
             src={imgUploaded}
             alt="banner"
-            className="absolute rounded-lg object-cover w-full h-40 pr-32 pl-32 md:max-w-screen-sm lg:max-w-screen-lg"
+            className="absolute rounded-lg object-cover w-full h-full"
           />
         ) : (
           <></>
@@ -65,7 +65,12 @@ const ImageInput: React.FC = () => {
           onChange={readURL}
         />
       </label>
-      <p className="text-sm text-gray-500">Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe repudiandae inventore esse odit repellendus facere tempora iusto, assumenda magnam voluptatibus consequuntur quia ducimus, dolorem commodi reprehenderit adipisci delectus ea quas.</p>
+      <p className="text-sm text-gray-500">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe
+        repudiandae inventore esse odit repellendus facere tempora iusto,
+        assumenda magnam voluptatibus consequuntur quia ducimus, dolorem commodi
+        reprehenderit adipisci delectus ea quas.
+      </p>
     </div>
   );
 };

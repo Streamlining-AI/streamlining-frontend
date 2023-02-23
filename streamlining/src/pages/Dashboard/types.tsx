@@ -5,6 +5,13 @@ export interface CardForm{
     desciption : string;
 }
 
+export interface Historydata{
+    id : string;
+    name : string;
+    response : string;
+    date : string;
+}
+
 export interface DashboardInput{
     data : CardForm[]
 }
