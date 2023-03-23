@@ -27,7 +27,7 @@ const App: React.FC = () => {
         <Route path="/login/github/:status" element={<CallbackGithub />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/model/:id" element={<Modelpage />} />
+        <Route path="/model/:model_id" element={<Modelpage />} />
 
         <Route
           path="/uploadModel"

@@ -1,14 +1,7 @@
-
 import * as React from "react";
 
 const LogOutput: React.FC = () => {
-  return (
-    <div className="flex w-full">
-      <textarea id="output" name="output_text" disabled={true}>
-        Log of progression!
-      </textarea>
-    </div>
-  );
+  return <div className="flex">Log of progression!</div>;
 };
 
 export default LogOutput;

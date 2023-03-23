@@ -1,9 +1,9 @@
 import axios from "axios";
-import React, { useState } from "react";
-import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
+import React, { useRef, useState } from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { FormUpload } from "./type";
-
+import uploadImg from "../../utils/helper";
 const UploadModel: React.FC = () => {
   const {
     register,
@@ -11,25 +11,28 @@ const UploadModel: React.FC = () => {
     control,
     // formState: { errors },
   } = useForm<FormUpload>();
-  const { fields, append, remove } = useFieldArray({
-    name: "input",
-    control,
-  });
+  // const { fields, append, remove } = useFieldArray({
+  //   name: "input",
+  //   control,
+  // });
   const [imgUploaded, setimgUploaded] = useState("");
-
+  const toastId = useRef("");
   const onSubmit: SubmitHandler<FormUpload> = async (data) => {
     try {
-      data.code = JSON.parse(localStorage.getItem("app_user") || "").token;
-      toast.loading("Uploading");
-      await axios.post(
-        `${process.env.REACT_APP_Backend_URL}upload/clone`,
-        data
-      );
-      toast.dismiss();
+      data.github_code = JSON.parse(
+        localStorage.getItem("app_user") || ""
+      ).token;
+      data.user_id = JSON.parse(localStorage.getItem("app_user") || "").user.id;
+      data.is_visible = data.is_visible ? true : false;
+      data.model_version = "v1.0";
+      data.banner_url = await uploadImg(data.banner_url);
+      const notify = () => (toastId.current = toast.loading("Uploading"));
+      notify();
+      await axios.post(`${process.env.REACT_APP_Backend_URL}model/`, data);
+      toast.dismiss(toastId.current);
       toast.success("Uploaded!");
-
-      console.log("posted!");
     } catch (error) {
+      toast.dismiss(toastId.current);
       toast.error("Something went wrong!");
     }
   };
@@ -93,7 +96,7 @@ const UploadModel: React.FC = () => {
                 id="dropzone-file"
                 type="file"
                 className="hidden"
-                onChange={readURL}
+                {...register("banner_url", { onChange: (e) => readURL(e) })}
               />
             </label>
           </div>
@@ -121,7 +124,7 @@ const UploadModel: React.FC = () => {
               </label>
             </div>
             <div className="w-full">
-              <select
+              {/* <select
                 name="name"
                 className="border-2 rounded-full border-sl-orange p-2 w-full"
               >
@@ -130,18 +133,18 @@ const UploadModel: React.FC = () => {
                 <option value={"Example"}>Example</option>
                 <option value={"Example"}>Example</option>
                 <option value={"Example"}>Example</option>
-              </select>
-              {/* <input
+              </select> */}
+              <input
                 type={"text"}
                 placeholder="Github Repository"
                 className="border-2 rounded-full border-sl-orange p-2 w-full"
-                {...register("url", {
+                {...register("github_url", {
                   required: {
                     value: true,
                     message: "Github Repository is required",
                   },
                 })}
-              /> */}
+              />
             </div>
           </div>
           {/* Model Type */}
@@ -153,8 +156,8 @@ const UploadModel: React.FC = () => {
             </div>
             <div className="w-full">
               <select
-                name="ModelType"
                 className="border-2 rounded-full border-sl-orange p-2 w-full"
+                {...register("type")}
               >
                 <option value={"Image Segmentation"} selected>
                   Image Segmentation
@@ -248,7 +251,7 @@ const UploadModel: React.FC = () => {
             </div>
           </div> */}
           {/* Output */}
-          
+
           {/* <div className="flex flex-row  items-center w-full">
             <div className="w-2/6">
               <label style={{ maxWidth: "78px" }} className="w-2/6 break-words">
@@ -277,7 +280,7 @@ const UploadModel: React.FC = () => {
             </div>
           </div> */}
           {/* Paper */}
-          <div className="flex flex-row items-center w-full ">
+          {/* <div className="flex flex-row items-center w-full ">
             <div className="w-2/6">
               <label style={{ maxWidth: "78px" }}>Paper</label>
             </div>
@@ -289,7 +292,7 @@ const UploadModel: React.FC = () => {
                 className="border-2 rounded-full border-sl-orange p-2 w-full"
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Model Visibility */}
           <div className="flex flex-row items-center w-full ">
@@ -305,18 +308,18 @@ const UploadModel: React.FC = () => {
                 <label>Public</label>
                 <input
                   type={"radio"}
-                  name="Visibility"
-                  value={"false"}
+                  value={0}
                   className="border-2 rounded-full border-sl-orange"
+                  {...register("is_visible")}
                 />
               </div>
               <div className="flex w-1/2 space-x-5">
                 <label>Private</label>
                 <input
                   type={"radio"}
-                  name="Visibility"
-                  value={"true"}
+                  value={1}
                   className="border-2 rounded-full border-sl-orange"
+                  {...register("is_visible")}
                 />
               </div>
             </div>
@@ -328,9 +331,12 @@ const UploadModel: React.FC = () => {
             </div>
             <div className="w-full">
               <textarea
-                name="Description"
                 placeholder="Description"
                 className="border-2 rounded-lg border-sl-orange p-2 w-full"
+                {...register("description", {
+                  required: { value: true, message: "Description is required" },
+                  minLength: 2,
+                })}
               />
             </div>
           </div>

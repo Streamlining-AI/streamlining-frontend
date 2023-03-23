@@ -13,9 +13,9 @@ const HamburgerMenu: React.FC<Props> = (props: Props) => {
       <div
         className={
           (props.isOpen
-            ? "visible transition transform translate-x-72 ease-in-out duration-300 "
-            : "visible transition transform -translate-x-72 ease-in-out duration-300  ") +
-          "absolute bg-white bg-blur-sm h-screen w-64  left-0 z-50 border-r-4 border-sl-orange drop-shadow-lg"
+            ? " translate-x-72 "
+            : " -translate-x-72 ") +
+          "visible transition transform ease-in-out duration-300 absolute bg-white bg-blur-sm h-screen w-64  left-0 z-50 border-r-4 border-sl-orange drop-shadow-lg"
         }
         style={{ marginLeft: "-18rem" }}
       >

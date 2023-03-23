@@ -1,26 +1,41 @@
 import * as React from "react";
+import { UseFormRegister, FieldValues } from "react-hook-form";
 
+interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
+  name: string;
+  default_data: any;
+  data: any[];
+  description: string;
+  register: UseFormRegister<FieldValues>;
+}
 
-interface Props {
-    name: string;
-    data: any[];
-    description: string;
-  }
-
-const SelectorInput: React.FC = () => {
+const SelectorInput: React.FC<Props> = ({
+  name,
+  default_data,
+  data,
+  description,
+  register,
+}) => {
   return (
     <div className="flex flex-col gap-y-2 justify-center w-full">
-      <h3>variable name</h3>
-      <select className="border-2 rounded-lg p-2 w-full">
+      <h3>{name}</h3>
+      <select
+        className="border-2 rounded-lg p-2 w-full"
+        defaultValue={default_data}
+        {...register(name)}
+      >
         {/* Using map for split data */}
-        <option value={"Example"}>Example</option>
+        {data.map((choice, index) => {
+          // if(choice === default_data)
+          //   return <option key={index} value={choice}>{choice}</option>;
+          return (
+            <option key={index} value={choice}>
+              {choice}
+            </option>
+          );
+        })}
       </select>
-      <p className="text-sm text-gray-500">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe
-        repudiandae inventore esse odit repellendus facere tempora iusto,
-        assumenda magnam voluptatibus consequuntur quia ducimus, dolorem commodi
-        reprehenderit adipisci delectus ea quas.
-      </p>
+      <p className="text-sm text-gray-500">{description}</p>
     </div>
   );
 };

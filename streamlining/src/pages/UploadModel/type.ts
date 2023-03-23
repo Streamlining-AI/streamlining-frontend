@@ -1,18 +1,11 @@
 export interface FormUpload {
   name: string;
-  url: string;
-  modeltype : string;
-  input: {
-    name : string;
-    type : string;
-    default : string;
-    description : string;
-    ge? : number;
-    le? : number;
-  }[];
-  output : string;
-  paper : string;
-  visibility : boolean;
+  github_url: string;
+  type : string;
+  user_id : string;
+  is_visible : boolean;
   description : string;
-  code: string;
+  github_code: string;
+  model_version : string;
+  banner_url : any; // File then Str
 }

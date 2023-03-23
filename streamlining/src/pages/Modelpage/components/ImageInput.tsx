@@ -1,29 +1,51 @@
 import * as React from "react";
+import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form";
+import { toast } from "react-hot-toast";
+import uploadImg from "../../../utils/helper";
 
-interface Props {
+interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;
   imgUrl: string;
   description: string;
+  register: UseFormRegister<FieldValues>;
+  setValue : UseFormSetValue<FieldValues>;
 }
 
-const ImageInput: React.FC = () => {
-  const [imgUploaded, setimgUploaded] = React.useState("");
-  const readURL = (event: React.ChangeEvent<HTMLInputElement>) => {
+const ImageInput: React.FC<Props> = ({
+  name,
+  imgUrl,
+  description,
+  register,
+  setValue
+}) => {
+  const [imgUploaded, setimgUploaded] = React.useState(imgUrl);
+  const readURL = async(event: React.ChangeEvent<HTMLInputElement>) => {
     const target = event.target as HTMLInputElement;
     // const file = target.files![0];
+    
     if (target.files && target.files[0]) {
-      let reader = new FileReader();
-      reader.onload = () => {
-        setimgUploaded(`${reader.result}`);
-      };
-      reader.readAsDataURL(target.files[0]);
+      try {
+        const url = await uploadImg(target.files);
+        setimgUploaded(url);
+        setValue(name,url)
+        return url
+      } catch (error) {
+        toast.error("Failed to upload.")
+        setValue(name,imgUrl)
+        return imgUrl
+      }
     }
   };
-  
+
   return (
     <div className="flex flex-col gap-y-2 justify-center w-full">
-      <h3>variable name</h3>
-      <label className={"relative flex flex-col items-center justify-center w-full h-80 rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 " + (imgUploaded === "" ? "border-2 border-dashed border-gray-300" : "")}>
+      <h3>{name}</h3>
+      <label
+        className={
+          "relative flex flex-col items-center justify-center w-full h-80 rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 " +
+          (imgUploaded === "" ? "border-2 border-dashed border-gray-300" : "")
+        }
+      >
         {imgUploaded !== "" ? (
           <img
             id="banner"
@@ -62,15 +84,10 @@ const ImageInput: React.FC = () => {
           id="dropzone-file"
           type="file"
           className="hidden"
-          onChange={readURL}
+          {...register(name, { value : `${imgUrl}` , onChange: (e) => readURL(e)})}
         />
       </label>
-      <p className="text-sm text-gray-500">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Saepe
-        repudiandae inventore esse odit repellendus facere tempora iusto,
-        assumenda magnam voluptatibus consequuntur quia ducimus, dolorem commodi
-        reprehenderit adipisci delectus ea quas.
-      </p>
+      <p className="text-sm text-gray-500">{description}</p>
     </div>
   );
 };
