@@ -234,7 +234,7 @@ const Modelpage: React.FC = () => {
       );
       setoutput({
         status: response.data["status"],
-        data: response.data["output"],
+        data: `${process.env.REACT_APP_Backend_URL}`.slice(0,-1) +response.data["output"],
       });
       toast.dismiss(toastId.current);
       toast.success('Predicted!')
@@ -257,7 +257,7 @@ const Modelpage: React.FC = () => {
     <div className="w-screen h-screen pt-16 pl-5 pr-5 overflow-x-hidden">
       <div id="model" className="flex w-full basis-1/2 pt-2">
         <div id="input" className="flex flex-col w-1/2">
-          <h1 className="text-2xl">Author/Model Name</h1>
+          <h1 className="text-2xl">{model_data ? model_data["name"] : ''}</h1>
           {/* INPUT FORM */}
           <form
             className="flex flex-col w-full p-5 gap-y-2"

@@ -1,6 +1,4 @@
 import axios from "axios";
-import React from "react";
-import { FieldValues } from "react-hook-form";
 const uploadImg = async (file: FileList) => {
   let img = new FormData();
   img.append("uploadFile", file[0]);

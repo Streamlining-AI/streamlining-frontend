@@ -8,7 +8,7 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   imgUrl: string;
   description: string;
   register: UseFormRegister<FieldValues>;
-  setValue : UseFormSetValue<FieldValues>;
+  setValue: UseFormSetValue<FieldValues>;
 }
 
 const ImageInput: React.FC<Props> = ({
@@ -16,23 +16,23 @@ const ImageInput: React.FC<Props> = ({
   imgUrl,
   description,
   register,
-  setValue
+  setValue,
 }) => {
   const [imgUploaded, setimgUploaded] = React.useState(imgUrl);
-  const readURL = async(event: React.ChangeEvent<HTMLInputElement>) => {
+  const readURL = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const target = event.target as HTMLInputElement;
     // const file = target.files![0];
-    
+
     if (target.files && target.files[0]) {
       try {
         const url = await uploadImg(target.files);
         setimgUploaded(url);
-        setValue(name,url)
-        return url
+        setValue(name, url);
+        return url;
       } catch (error) {
-        toast.error("Failed to upload.")
-        setValue(name,imgUrl)
-        return imgUrl
+        toast.error("Failed to upload.");
+        setValue(name, imgUrl);
+        return imgUrl;
       }
     }
   };
@@ -51,7 +51,7 @@ const ImageInput: React.FC<Props> = ({
             id="banner"
             src={imgUploaded}
             alt="banner"
-            className="absolute rounded-lg object-cover w-full h-full"
+            className="absolute z-30 rounded-lg object-cover w-full h-full"
           />
         ) : (
           <></>
@@ -84,7 +84,10 @@ const ImageInput: React.FC<Props> = ({
           id="dropzone-file"
           type="file"
           className="hidden"
-          {...register(name, { value : `${imgUrl}` , onChange: (e) => readURL(e)})}
+          {...register(name, {
+            value: `${imgUrl}`,
+            onChange: (e) => readURL(e),
+          })}
         />
       </label>
       <p className="text-sm text-gray-500">{description}</p>

@@ -16,6 +16,7 @@ import CallbackGithub from "./components/CallbackGithub";
 import Dashboard from "./pages/Dashboard";
 import { Toaster } from "react-hot-toast";
 import Home from "./pages/Home";
+import Explore from "./pages/Explore";
 
 const App: React.FC = () => {
   return (
@@ -28,7 +29,7 @@ const App: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/model/:model_id" element={<Modelpage />} />
-
+        <Route path="/explore" element={<Explore/>}/>
         <Route
           path="/uploadModel"
           element={

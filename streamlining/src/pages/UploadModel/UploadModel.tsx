@@ -325,7 +325,7 @@ const UploadModel: React.FC = () => {
             </div>
           </div>
           {/* Description */}
-          <div className="flex flex-col items-start w-full ">
+          {/* <div className="flex flex-col items-start w-full ">
             <div className="w-2/6">
               <label style={{ maxWidth: "78px" }}>Description</label>
             </div>
@@ -339,7 +339,7 @@ const UploadModel: React.FC = () => {
                 })}
               />
             </div>
-          </div>
+          </div> */}
 
           <button
             type="submit"

@@ -1,5 +1,5 @@
 import { CardForm, DashboardInput, Historydata } from "./types";
-import Card from "./components/Card";
+import Card from "../../components/Card/Card";
 import { Link, useNavigate } from "react-router-dom";
 const Dashboard: React.FC = () => {
   const data: CardForm[] = [
@@ -69,9 +69,10 @@ const Dashboard: React.FC = () => {
         <div className="flex flex-col w-full h-full gap-y-5 pt-5 pb-16">
           <h1 className="text-3xl font-bold">DASHBOARD</h1>
           <div className="w-full h-1/3 grid grid-cols-1 grid-rows-1 gap-5 sm:grid-cols-1 lg:grid-cols-5">
-            {data.map((card) => {
+            {data.map((card,key) => {
               return (
                 <Card
+                  id ={key.toString()}
                   imgUrl={card.imgUrl}
                   name={card.name}
                   author={card.author}
