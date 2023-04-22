@@ -35,7 +35,7 @@ const Login: React.FC = () => {
       <div className="flex flex-col h-full w-full justify-center text-center font-bold">
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-96 border-4 border-sl-orange border-opacity-50 m-auto pl-20 pr-20 pt-12 pb-12 gap-y-4 rounded-lg">
           <h1 className="text-6xl">SignIn</h1>
-          <input
+          {/* <input
             type="text"
             placeholder="username"
             className="flex w-full h-10 border-4 border-sl-orange border-opacity-50 rounded-lg p-2"
@@ -65,7 +65,7 @@ const Login: React.FC = () => {
             <div className="flex-grow border-t border-4 border-sl-orange border-opacity-50 rounded-lg"></div>
             <h3 className="flex-shrink mx-4 text-sl-orange">or</h3>
             <div className="flex-grow border-t border-4 border-sl-orange border-opacity-50 rounded-lg"></div>
-          </div>
+          </div> */}
           <button
             type="button"
             className="flex w-full bg-black rounded-lg p-4 text-white justify-center"
@@ -98,7 +98,7 @@ const Login: React.FC = () => {
               privacy policy.
             </a>
           </span>
-          <Link to="/register" className="text-sm underline text-right">Sign Up?</Link>
+          {/* <Link to="/register" className="text-sm underline text-right">Sign Up?</Link> */}
         </form>
       </div>
     </div>

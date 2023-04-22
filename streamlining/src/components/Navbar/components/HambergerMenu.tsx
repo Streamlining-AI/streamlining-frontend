@@ -7,15 +7,32 @@ interface Props {
   state: Dispatch<SetStateAction<boolean>>;
 }
 const HamburgerMenu: React.FC<Props> = (props: Props) => {
-   const {handleLogout} = useUser();
+  const { handleLogout } = useUser();
+  // window.onclick = function(e) {
+  //   console.log(e.target)
+  //   if(props.isOpen){
+
+  //     if (e.target !== document.getElementById('Hamburger')){
+  //       props.state(false)
+  //     }
+  //   }
+
+  // }
   return (
-    <>
+    <div
+      id="Wrapper"
+      className={"fixed w-full h-full z-50 " + (props.isOpen ? " " : "hidden") }
+      onClick={() => {
+        if (props.isOpen) {
+          props.state(false)
+        }
+      }}
+    >
       <div
+        id="Hamburger"
         className={
-          (props.isOpen
-            ? " translate-x-72 "
-            : " -translate-x-72 ") +
-          "visible transition transform ease-in-out duration-300 absolute bg-white bg-blur-sm h-screen w-64  left-0 z-50 border-r-4 border-sl-orange drop-shadow-lg"
+          (props.isOpen ? " translate-x-72 " : " -translate-x-72 ") +
+          "  visible transition transform ease-in-out duration-300 relative bg-white bg-blur-sm h-screen w-64  left-0  border-r-4 border-sl-orange drop-shadow-lg"
         }
         style={{ marginLeft: "-18rem" }}
       >
@@ -27,7 +44,6 @@ const HamburgerMenu: React.FC<Props> = (props: Props) => {
               type="button"
               onClick={() => {
                 props.state(!props.isOpen);
-                console.log(props.isOpen);
               }}
               className="flex h-8 w-8"
             >
@@ -42,19 +58,26 @@ const HamburgerMenu: React.FC<Props> = (props: Props) => {
             </Link>
           </div>
           <div className="flex flex-col items-start pl-12 gap-y-3">
+            <Link to="/explore" className="flex text-2xl">
+              Explore
+            </Link>
             <Link to="/dashboard" className="flex text-2xl">
               Dashboard
             </Link>
             <Link to="/uploadModel" className="flex text-2xl">
               UploadModel
             </Link>
-            <button type="button" onClick={handleLogout} className="flex text-2xl">
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="flex text-2xl"
+            >
               Logout
             </button>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 // eslint-disable-next-line
 import logo from "./logo.svg";
 import "./App.css";
@@ -17,14 +17,20 @@ import Dashboard from "./pages/Dashboard";
 import { Toaster } from "react-hot-toast";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
+import HamburgerMenu from "./components/Navbar/components/HambergerMenu";
+import Doc from "./pages/Documentation/Doc";
+import UpdateModel from "./pages/UpdateModel/UpdateModel";
 
 const App: React.FC = () => {
+  const [isOpen, setOpen] = useState(false);
   return (
     <Router>
-      <Navbar />
+      <HamburgerMenu isOpen={isOpen} state={setOpen}/>
+      <Navbar isOpen={isOpen} state={setOpen} />
       <Routes>
-
+      
         <Route path="/" element={<Home/>}/>        
+        <Route path="/doc" element={<Doc/>}/>
         <Route path="/login/github/:status" element={<CallbackGithub />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -39,6 +45,14 @@ const App: React.FC = () => {
           }
         />
         <Route
+          path="/updateModel/:model_id"
+          element={
+            <ProtectedRoute>
+              <UpdateModel />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
@@ -46,6 +60,7 @@ const App: React.FC = () => {
             </ProtectedRoute>
           }
         />
+
       </Routes>
       <Toaster position="top-right"/>
     </Router>

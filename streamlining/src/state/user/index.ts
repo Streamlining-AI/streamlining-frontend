@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import UserApi from "../../api/user";
 import { Token, User, UserState } from "../types";
 
@@ -72,6 +71,7 @@ export const fetchCallbackGithub = createAsyncThunk<
   { Code: string }
 >("/users/login/github/callback", async ({ Code }) => {
   const response = await UserApi.callbackGithub(Code);
+  response.data.ID = response.data.ID.split('"')[1]
   return response.data;
 });
 

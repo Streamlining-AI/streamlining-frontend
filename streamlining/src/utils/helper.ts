@@ -18,3 +18,4 @@ const uploadImg = async (file: FileList) => {
 };
 export default uploadImg;
 
+

@@ -8,22 +8,30 @@ const Home: React.FC = () => {
   const { user } = useUser();
   return (
     <div className="flex flex-col w-full h-full  ">
-      <div className="flex flex-col w-3/5 h-screen gap-y-5 pt-32 pb-16 pl-5 pr-5 justify-center">
+      <section className="flex flex-col w-full xl:w-3/5 h-screen gap-y-5 pt-32 pb-16 pl-5 pr-5 justify-center">
         {/* Article */}
         <div className="flex">
-          <h1 className="text-6xl">
+          <h1 className="text-4xl md:text-6xl">
             Streamlining AI Inference for Model Sharing and Collaboration.
           </h1>
         </div>
-        <div className="flex w-4/5">
+        <div className="flex w-full xl:w-4/5">
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
+            โครงงานนี้จัดทำเพื่อพัฒนาเว็บแอพพลิเคชันที่สามารถใช้นำเสนอและทดสอบโมเดลปัญญาประดิษฐ์ผ่านบริการเว็บ
+            ทั้งนี้เพื่อให้ผู้ที่สนใจสามารถศึกษาและทดลองใช้งานโมเดลปัญญาประดิษฐ์ได้ง่าย
+            ส่งเสริมให้เกิดชุมชนนักพัฒนาให้สามารถทดสอบการใช้งานโมเดลปัญญาประดิษฐ์ในวงกว้างได้มากยิ่งขึ้น
+            โดยนักพัฒนาสามารถอัพโหลดโมเดลปัญญาประดิษฐ์ผ่านการจัดการระบบคอนเทนเนอร์
+            เช่น Kubernetes หรือ Docker เป็นต้น
+            ทำให้สามารถจัดการทรัพยากรและไลบรารีที่จำเป็นต่อการใช้งาน
+            รวมถึงให้บริการในลักษณะของบริการซอฟต์แวร์เพื่อทดแทนการติดตั้งทดสอบโมเดลโดยตรงซึ่งอาจจะยุ่งยาก
+            โดยทีมงานวางแผนจะใช้เครื่องมือเช่น COG
+            ซึ่งเป็นซอฟต์แวร์โอเพนซอร์สเป็นพื้นฐานในการใช้รันโมเดลปัญญาประดิษฐ์
+            มาใช้งานร่วมกับหน่วยรับข้อมูลเข้า เช่น
+            กล้องที่เชื่อมต่อกับคอมพิวเตอร์ รวมถึงโมเดลประเภทการแบ่งประเภท
+            หรือการจัดแบ่งพื้นที่ภาพ
+            เพื่อให้นักพัฒนาหรือผู้ที่สนใจสามารถทดสอบโมเดลที่เกี่ยวกับการใช้งานด้าน
+            Computer Vision ได้สะดวกมากขึ้น
+            ทำให้สามารถแลกเปลี่ยนเรียนรู้และศึกษาทำงานร่วมกันได้
           </p>
         </div>
         <button
@@ -36,8 +44,8 @@ const Home: React.FC = () => {
             <Link to="/login">Let’s Join Us!</Link>
           )}
         </button>
-      </div>
-      <div className="flex flex-col h-screen p-5 ">
+      </section>
+      <section className="flex flex-col h-screen p-5 ">
         <div className="flex flex-col w-full h-1/2 items-center gap-4">
           <h1 className="text-3xl">Advisor</h1>
           <div className="inline-flex w-72 gap-10">
@@ -47,12 +55,11 @@ const Home: React.FC = () => {
               img="https://avatars.githubusercontent.com/u/7629231?v=4"
               github="https://github.com/akkarit"
             />
-            
           </div>
         </div>
         <div className="flex flex-col w-full h-1/2 items-center gap-4">
           <h1 className="text-3xl">Creater</h1>
-          <div className="inline-flex w-2/5 gap-10">
+          <div className="grid grid-cols-1 w-72 md:grid-cols-2 md:w-2/5 gap-10">
             <PersonCard
               name="Nawapol Krudpun"
               role="Member"
@@ -67,7 +74,7 @@ const Home: React.FC = () => {
             />
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

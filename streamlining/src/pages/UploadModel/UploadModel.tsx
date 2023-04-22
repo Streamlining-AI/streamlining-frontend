@@ -4,11 +4,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { FormUpload } from "./type";
 import uploadImg from "../../utils/helper";
+import { ReactMarkdown } from "react-markdown/lib/react-markdown";
 const UploadModel: React.FC = () => {
   const {
     register,
     handleSubmit,
-    control,
     // formState: { errors },
   } = useForm<FormUpload>();
   // const { fields, append, remove } = useFieldArray({
@@ -23,7 +23,8 @@ const UploadModel: React.FC = () => {
         localStorage.getItem("app_user") || ""
       ).token;
       data.user_id = JSON.parse(localStorage.getItem("app_user") || "").user.id;
-      data.is_visible = data.is_visible ? true : false;
+
+      data.is_visible = Number(data.is_visible) === 0 ? true : false;
       data.model_version = "v1.0";
       data.banner_url = await uploadImg(data.banner_url);
       const notify = () => (toastId.current = toast.loading("Uploading"));
@@ -49,12 +50,45 @@ const UploadModel: React.FC = () => {
     }
   };
 
+  const [state, setState] = useState(false);
+
   return (
     <>
       <div className="w-screen h-screen pt-16 pl-5 pr-5">
+        <div
+          className={
+            "flex flex-col items-center gap-y-3 pr-32 pl-32 pt-12 max-w-screen-lg m-auto " +
+            (state ? "hidden" : "")
+          }
+        >
+          <ReactMarkdown
+            className="prose"
+            children={`### สร้างพื้นที่เตรียมสำหรับขึ้นโมเดลแล้ว ผู้ใช้จำเป็นต้องอัพโหลดโมเดลขึ้น!
+แต่ก่อนอื่นเลย อย่าลืมเตรียมโมเดลของคุณให้เรียบร้อยโดยการกำหนด __config.json__ และ __cog.yaml__
+ถ้าอยากรู้รายละเอียดเพิ่มเติมได้ทีนี้ [Documentation](/doc)
+ ~~~Comand Lind
+docker login streamlining.com -u <user> -p <pass>
+docker tag SOURCE_IMAGE[:TAG] streamlining.com/streamlining/{MODEL_NAME}
+docker push streamlining.com/streamlining/{MODEL_NAME}
+ ~~~
+ `}
+          />
+          <button
+            className="bg-sl-orange text-white p-2 pl-5 pr-5 rounded-full hover:bg-gray-500"
+            onClick={() => {
+              setState(true);
+            }}
+          >
+            Next
+          </button>
+        </div>
+
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="flex flex-col items-center gap-y-3 pr-32 pl-32 pt-12 max-w-screen-lg m-auto"
+          className={
+            "flex flex-col items-center gap-y-3 pr-32 pl-32 pt-12 max-w-screen-lg m-auto" +
+            (state ? "" : " hidden")
+          }
         >
           <div className="flex items-center justify-center w-full">
             <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
@@ -340,13 +374,22 @@ const UploadModel: React.FC = () => {
               />
             </div>
           </div> */}
-
+          <div className="flex gap-x-2">
+          <button
+            className="bg-gray-500 text-white p-2 pl-5 pr-5 rounded-full hover:bg-sl-orange"
+            onClick={() => {
+              setState(false);
+            }}
+          >
+            Back
+          </button>
           <button
             type="submit"
-            className="bg-sl-orange text-white p-2 pl-5 pr-5 rounded-full "
+            className="bg-sl-orange text-white p-2 pl-5 pr-5 rounded-full hover:bg-gray-500"
           >
             Submit
           </button>
+          </div>
         </form>
       </div>
     </>

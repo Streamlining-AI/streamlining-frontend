@@ -1,5 +1,10 @@
 import * as React from "react";
-import { UseFormRegister, FieldValues } from "react-hook-form";
+import {
+  UseFormRegister,
+  FieldValues,
+  UseFormGetValues,
+  UseFormSetValue,
+} from "react-hook-form";
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   name: string;
@@ -9,6 +14,8 @@ interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   ge?: any; // number , float
   le?: any; // number , float
   register: UseFormRegister<FieldValues>;
+  getValues: UseFormGetValues<FieldValues>;
+  setValue: UseFormSetValue<FieldValues>;
 }
 
 const NumberInput: React.FC<Props> = ({
@@ -19,6 +26,8 @@ const NumberInput: React.FC<Props> = ({
   ge,
   le,
   register,
+  getValues,
+  setValue,
 }) => {
   const [data_default, setData] = React.useState(data);
   if (type === "int") {
@@ -35,6 +44,8 @@ const NumberInput: React.FC<Props> = ({
         className="border-2 rounded-lg p-2 w-full"
         step={type === "float" ? 0.1 : 1}
         defaultValue={data_default}
+        min={ge}
+        max={le}
         {...register(name, {
           required: true,
           maxLength: le,
@@ -50,13 +61,21 @@ const NumberInput: React.FC<Props> = ({
       {/* for ge and le */}
 
       <input
-        name="data"
         type={"range"}
         step={type === "float" ? 0.1 : 1}
         className={"border-2 rounded-lg w-full " + (ge || le ? " " : "hidden")}
         defaultValue={data_default}
+        min={ge}
+        max={le}
+        value={getValues(name)}
         onChange={(e) => {
           setData(
+            type === "int"
+              ? parseInt(e.target.value)
+              : parseFloat(e.target.value)
+          );
+          setValue(
+            name,
             type === "int"
               ? parseInt(e.target.value)
               : parseFloat(e.target.value)
