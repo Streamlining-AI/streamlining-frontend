@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import Card from "../../components/Card";
+import { Config } from "../../config";
+
 
 const Explore: React.FC = () => {
   const [data, setData] = useState([]);
@@ -12,7 +14,7 @@ const Explore: React.FC = () => {
   const search_name_ref = useRef<HTMLInputElement>(null);
   const fetchData = async () => {
     const response = await axios.get(
-      `${process.env.REACT_APP_Backend_URL}model/`
+      `${Config.REACT_APP_Backend_URL}model/`
     );
     if (response) {
       setData(response.data);

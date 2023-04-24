@@ -5,6 +5,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { FormUpload } from "./type";
 import uploadImg from "../../utils/helper";
+import { Config } from "../../config";
+
 const UpdateModel: React.FC = () => {
   const { model_id } = useParams();
 
@@ -33,7 +35,7 @@ const UpdateModel: React.FC = () => {
       data.banner_url = await uploadImg(data.banner_url);
       const notify = () => (toastId.current = toast.loading("Uploading"));
       notify();
-      await axios.put(`${process.env.REACT_APP_Backend_URL}model/`, data);
+      await axios.put(`${Config.REACT_APP_Backend_URL}model/`, data);
       toast.dismiss(toastId.current);
       toast.success("Uploaded!");
     } catch (error) {
@@ -56,11 +58,12 @@ const UpdateModel: React.FC = () => {
 
   const fetchData = async () => {
     const response = await axios.get(
-      `${process.env.REACT_APP_Backend_URL}model/${model_id}/`
+      `${Config.REACT_APP_Backend_URL}model/${model_id}/`
     );
     if (response) {
       setData(response.data);
       setValue("name", response.data["name"]);
+      setValue("registry", response.data["registry"]);
       setValue("github_url", response.data["github_url"]);
       setValue("type", response.data["type"]);
     }
@@ -135,6 +138,39 @@ const UpdateModel: React.FC = () => {
               />
             </div>
           </div>
+
+          {/* Registry */}
+          <div className="flex flex-row  items-center w-full">
+            <div className="w-2/6">
+              <label style={{ maxWidth: "78px" }} className="w-2/6 break-words">
+                Registry
+              </label>
+            </div>
+            <div className="w-full">
+              {/* <select
+                name="name"
+                className="border-2 rounded-full border-sl-orange p-2 w-full"
+              >
+                
+                <option value={"Example"}>Example</option>
+                <option value={"Example"}>Example</option>
+                <option value={"Example"}>Example</option>
+                <option value={"Example"}>Example</option>
+              </select> */}
+              <input
+                type={"text"}
+                placeholder="Docker Hub or AWS other"
+                className="border-2 rounded-full border-sl-orange p-2 w-full"
+                {...register("registry", {
+                  required: {
+                    value: true,
+                    message: "Registry is required",
+                  },
+                })}
+              />
+            </div>
+          </div>
+
           {/* GitHub */}
           <div className="flex flex-row  items-center w-full">
             <div className="w-2/6">

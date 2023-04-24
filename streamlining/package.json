@@ -34,9 +34,10 @@
   },
   "scripts": {
     "start": "HTTPS=true craco --openssl-legacy-provider start",
-    "build": "react-scripts --openssl-legacy-provider build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "craco --openssl-legacy-provider build",
+    "build:style": "tailwind build src/styles/index.css -o src/styles/tailwind.css",
+    "test": "craco test",
+    "eject": "craco eject"
   },
   "eslintConfig": {
     "extends": [

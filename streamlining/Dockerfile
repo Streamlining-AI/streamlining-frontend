@@ -1,5 +1,5 @@
 #Node Container
-FROM node:alpine
+FROM node:alpine as react-build
 
 WORKDIR /app
 
@@ -13,5 +13,10 @@ CMD ["npm", "run" ,"build"]
 
 
 #Production using NginX
+#FROM nginx:alpine
+#COPY build/ /usr/share/nginx/html
 FROM nginx:alpine
-COPY build/ /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=react-build /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

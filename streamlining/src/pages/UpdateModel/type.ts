@@ -1,5 +1,6 @@
 export interface FormUpload {
   name: string;
+  registry : string;
   github_url: string;
   type : string;
   user_id : string;

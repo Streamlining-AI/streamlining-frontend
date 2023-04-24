@@ -1,6 +1,8 @@
 import axios from "axios";
 import React, { Dispatch, SetStateAction } from "react";
 import { toast } from "react-hot-toast";
+import { Config } from "../../../config";
+
 
 interface Props {
   id: string;
@@ -12,7 +14,7 @@ const Modal: React.FC<Props> = ({ id, showModal, setShowModal }) => {
   const fetchData = async () => {
     try {
       const response = await axios.delete(
-        `${process.env.REACT_APP_Backend_URL}model/${id}`
+        `${Config.REACT_APP_Backend_URL}model/${id}`
       );
       setShowModal(false);
       toast.success("Deleted Model!");

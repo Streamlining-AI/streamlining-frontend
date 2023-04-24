@@ -15,6 +15,7 @@ import { useUser } from "../../state/user/hooks";
 import { ColumnDef } from "@tanstack/react-table";
 import { Table } from "./components/Table";
 import Webcam from "react-webcam";
+import { Config } from "../../config";
 
 const Modelpage: React.FC = () => {
   const toastId = React.useRef("");
@@ -28,6 +29,8 @@ const Modelpage: React.FC = () => {
   const { user } = useUser();
   const [model_data, setmodel_data] = React.useState(null);
   const [streaming, setStreaming] = React.useState(false);
+  const intervalref = React.useRef<number | null>(null);
+  const [statusStreaming, setStatusStreaming] = React.useState(false);
   const [history, setHistory] = React.useState(false);
   const [history_data, setHistoryData] = React.useState([]);
   const { model_id } = useParams();
@@ -39,7 +42,7 @@ const Modelpage: React.FC = () => {
 
   const fetchData = async () => {
     const response = await axios.get(
-      `${process.env.REACT_APP_Backend_URL}model/${model_id}/`
+      `${Config.REACT_APP_Backend_URL}model/${model_id}/`
     );
     if (response) {
       setmodel_data(response.data);
@@ -48,7 +51,7 @@ const Modelpage: React.FC = () => {
 
   const fetchHistory = async () => {
     const response = await axios.get(
-      `${process.env.REACT_APP_Backend_URL}model/output/${model_id}`
+      `${Config.REACT_APP_Backend_URL}model/output/${model_id}`
     );
 
     if (response) setHistoryData(response.data !== null ? response.data : []);
@@ -250,7 +253,7 @@ const Modelpage: React.FC = () => {
       let img = new FormData();
       img.append("uploadFile", file);
       const { status, data } = await axios.post(
-        `${process.env.REACT_APP_Backend_URL}upload`,
+        `${Config.REACT_APP_Backend_URL}upload`,
         img,
         {
           headers: {
@@ -261,13 +264,13 @@ const Modelpage: React.FC = () => {
       if (status === 500 || status === 400) throw new Error(data["message"]);
       //Post Uploader
 
-      
       const result =
-        `${process.env.REACT_APP_Backend_URL}`.slice(0, -1) + data.image_url;
+        `${Config.REACT_APP_Backend_URL}`.slice(0, -1) + data.image_url;
       return result;
-    } catch (error) {toast.error("Get Image to Server Error!")}
+    } catch (error) {
+      toast.error("Get Image to Server Error!");
+    }
   }, [webcamRef]);
-
 
   const onSubmit = handleSubmit(async (data) => {
     setHistory(false);
@@ -294,14 +297,14 @@ const Modelpage: React.FC = () => {
       };
 
       const response = await axios.post(
-        `${process.env.REACT_APP_Backend_URL}predict/`,
+        `${Config.REACT_APP_Backend_URL}predict/`,
         req,
         { withCredentials: true }
       );
       setoutput({
         status: response.data["status"],
         data:
-          `${process.env.REACT_APP_Backend_URL}`.slice(0, -1) +
+          `${Config.REACT_APP_Backend_URL}`.slice(0, -1) +
           response.data["output"],
       });
       toast.dismiss(toastId.current);
@@ -317,17 +320,22 @@ const Modelpage: React.FC = () => {
   });
 
   //Streaming
-  const onStreaming = handleSubmit(async (data) => {
+  const postStreaming = async (data: FieldValues) => {
     let imgUrl = await postWebcam();
-    const notify = () =>
-      (toastId.current = toast.loading("On Streaming..."));
+    const notify = () => (toastId.current = toast.loading("On Streaming..."));
     notify();
     setoutput({ status: "pending", data: "" });
     try {
       const data_inputs = Object.keys(data).map((key, index) => {
         return {
           name: key,
-          data: model_data ? (streaming ? (model_data["input_detail"][index]["type"] === "image" ? imgUrl : data[key]) : data[key]) : "",
+          data: model_data
+            ? streaming
+              ? model_data["input_detail"][index]["type"] === "image"
+                ? imgUrl
+                : data[key]
+              : data[key]
+            : "",
           type: model_data ? model_data["input_detail"][index]["type"] : "",
           model_input_detail_id: model_data
             ? model_data["input_detail"][index]["ModelInputDetailID"]
@@ -342,14 +350,14 @@ const Modelpage: React.FC = () => {
       };
 
       const response = await axios.post(
-        `${process.env.REACT_APP_Backend_URL}predict/`,
+        `${Config.REACT_APP_Backend_URL}stream/`,
         req,
         { withCredentials: true }
       );
       setoutput({
         status: response.data["status"],
         data:
-          `${process.env.REACT_APP_Backend_URL}`.slice(0, -1) +
+          `${Config.REACT_APP_Backend_URL}`.slice(0, -1) +
           response.data["output"],
       });
       toast.dismiss(toastId.current);
@@ -362,8 +370,23 @@ const Modelpage: React.FC = () => {
       toast.dismiss(toastId.current);
       toast.error("Error!");
     }
-  })
+  };
 
+  const onStreaming = handleSubmit(async (data) => {
+    setStatusStreaming(!statusStreaming);
+
+    if (statusStreaming && (intervalref.current === 0 || intervalref.current === null)) {
+      intervalref.current = window.setInterval(async () => {
+        await postStreaming(data);
+      }, 10000);
+    }
+
+    if (!statusStreaming) {
+      window.clearInterval(intervalref.current || 0);
+      toast.dismiss(toastId.current);
+      toast.success("Streaming Stop!")
+    }
+  });
   type Item = {
     id: string;
     modelname: string;
@@ -415,7 +438,7 @@ const Modelpage: React.FC = () => {
           setoutput({
             status: "success",
             data:
-              `${process.env.REACT_APP_Backend_URL}`.slice(0, -1) +
+              `${Config.REACT_APP_Backend_URL}`.slice(0, -1) +
               history_input_data["output"],
           });
         }
@@ -444,7 +467,7 @@ const Modelpage: React.FC = () => {
         setoutput({
           status: "success",
           data:
-            `${process.env.REACT_APP_Backend_URL}`.slice(0, -1) +
+            `${Config.REACT_APP_Backend_URL}`.slice(0, -1) +
             history_input_data["output"],
         });
         setHistory(false);
@@ -492,7 +515,7 @@ const Modelpage: React.FC = () => {
 
           <form
             className="flex flex-col w-full p-5 gap-y-2"
-            onSubmit={onSubmit}
+            onSubmit={streaming ? onStreaming : onSubmit}
           >
             {model_data ? (
               manageInput(model_data["input_detail"], register)
@@ -500,12 +523,21 @@ const Modelpage: React.FC = () => {
               <div>Loading!</div>
             )}
 
-            <button
-              type="submit"
-              className="bg-sl-orange text-white p-2 pl-5 pr-5 rounded-full "
-            >
-              RUN
-            </button>
+            {streaming ? (
+              <button
+                type="submit"
+                className="bg-sl-orange text-white p-2 pl-5 pr-5 rounded-full "
+              >
+                {statusStreaming ? "Stop" : "Start"}
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="bg-sl-orange text-white p-2 pl-5 pr-5 rounded-full "
+              >
+                RUN
+              </button>
+            )}
           </form>
         </div>
         <div id="output_zone" className="flex flex-col w-1/2 gap-y-3">
@@ -642,7 +674,7 @@ const Modelpage: React.FC = () => {
                 //   //  "description":"report Problem",
                 //   //  "model_id":"63fcd452f3c52be1440593c4"
                 //   const response = await axios.post(
-                //     `${process.env.REACT_APP_Backend_URL}predict/`,
+                //     `${Config.REACT_APP_Backend_URL}predict/`,
                 //     dataReport
                 //   );
                 // } catch (error) {}

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useUser } from "../../state/user/hooks";
 import Modal from "./components/Modal";
+import { Config } from "../../config";
 
 const Dashboard: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
@@ -17,7 +18,7 @@ const Dashboard: React.FC = () => {
   //FETCHDATA
   const fetchData = async () => {
     const response = await axios.get(
-      `${process.env.REACT_APP_Backend_URL}users/model/${user?.id}`
+      `${Config.REACT_APP_Backend_URL}users/model/${user?.id}`
     );
     if (response) setData(response.data);
   };
