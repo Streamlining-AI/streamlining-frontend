@@ -13,8 +13,6 @@ const Dashboard: React.FC = () => {
 
   const [data, setData] = useState([]);
 
-  const navigate = useNavigate();
-
   //FETCHDATA
   const fetchData = async () => {
     const response = await axios.get(
@@ -25,7 +23,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [showModal]);
 
   return (
     <>
@@ -45,6 +43,7 @@ const Dashboard: React.FC = () => {
                           name={card["name"]}
                           author={user ? user.username : ""}
                           desciption={card["description"]}
+                          predict_record_count={card["predict_record_count"]}
                         ></Card>
                         <div className="flex self-end gap-x-2">
                           <a
@@ -57,7 +56,6 @@ const Dashboard: React.FC = () => {
                             id={card["model_id"]}
                             className="p-2 bg-red-500 rounded-lg text-white hover:bg-gray-500"
                             onClick={() => {
-                              console.log(card["model_id"]);
                               setModel_id(card["model_id"]);
                               setShowModal(!showModal);
                             }}
@@ -71,37 +69,7 @@ const Dashboard: React.FC = () => {
                 : null}
             </div>
           </section>
-          {/* <section>
-            <h1 className="text-3xl font-bold">HISTORY</h1>
-            
-            <table className="table-auto w-full ">
-              <thead>
-                <tr className="text-left">
-                  <th>ID</th>
-                  <th>Model name</th>
-                  <th>Response</th>
-                  <th>Date</th>
-                </tr>
-              </thead>
-              <tbody className="">
-                {history.map((data) => {
-                  return (
-                    <tr
-                      key={data.id}
-                      onClick={() => {
-                        navigate("/", { replace: true });
-                      }}
-                    >
-                      <td>{data.id}</td>
-                      <td>{data.name}</td>
-                      <td>{data.response}</td>
-                      <td>{data.date}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </section> */}
+          
         </div>
       </div>
     </>

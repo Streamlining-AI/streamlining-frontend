@@ -32,6 +32,7 @@ const App: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/model/:model_id" element={<Modelpage />} />
+        <Route path="/model/:model_id/:version" element={<Modelpage />} />
         <Route path="/explore" element={<Explore/>}/>
         <Route
           path="/uploadModel"

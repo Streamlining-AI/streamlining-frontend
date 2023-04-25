@@ -123,9 +123,10 @@ const Explore: React.FC = () => {
                   <Card
                     id={item["model_id"]}
                     imgUrl={item["banner_url"]}
-                    author={item["name"]}
+                    author={"streamlining-ai"}
                     desciption={item["description"]}
                     name={item["name"]}
+                    predict_record_count={item["predict_record_count"]}
                   />
                 );
               }).reverse()

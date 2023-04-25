@@ -10,7 +10,7 @@ import { Config } from "../../config";
 const UpdateModel: React.FC = () => {
   const { model_id } = useParams();
 
-  const [data, setData] = useState();
+  const [dataFetch, setData] = useState();
 
   const {
     register,
@@ -28,10 +28,12 @@ const UpdateModel: React.FC = () => {
       data.github_code = JSON.parse(
         localStorage.getItem("app_user") || ""
       ).token;
+      
       data.user_id = JSON.parse(localStorage.getItem("app_user") || "").user.id;
-
       data.is_visible = Number(data.is_visible) === 0 ? true : false;
-      data.model_version = "v1.0";
+      data.name = dataFetch!["name"]
+      data.model_id = (model_id ? model_id : '');
+      data.model_version = "v1." + (Number((dataFetch!["version"][0] as string).split(".")[1])+1).toString();
       data.banner_url = await uploadImg(data.banner_url);
       const notify = () => (toastId.current = toast.loading("Uploading"));
       notify();
@@ -132,8 +134,9 @@ const UpdateModel: React.FC = () => {
                 type={"text"}
                 placeholder="Name"
                 className="border-2 rounded-full border-sl-orange p-2 w-full"
+                disabled={true}
                 {...register("name", {
-                  disabled: true,
+                  
                 })}
               />
             </div>

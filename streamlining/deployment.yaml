@@ -28,13 +28,15 @@ spec:
           resources:
             limits:
               memory: "150Mi"
+              cpu: "300m"
             requests:
               memory: "100Mi"
+              cpu: "250m"
           volumeMounts:
                       #override config.js file
-                      - name: config
-                        mountPath: "/usr/share/nginx/html/config.js"
-                        subPath: "config.js"
+            - name: config
+              mountPath: "/usr/share/nginx/html/config.js"
+              subPath: "config.js"
       volumes:
           - name: config
             configMap:
@@ -68,4 +70,4 @@ metadata:
     # namespace: streaming 
 data:
     web.properties: |
-        window.REACT_APP_Backend_URL = "http://myapp-service:8000/"
+        window.REACT_APP_Backend_URL = "http://103.153.118.69:30002/"

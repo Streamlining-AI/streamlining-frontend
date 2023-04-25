@@ -6,7 +6,7 @@ import SelectorInput from "./components/SelectorInput";
 import TextInput from "./components/TextInput";
 import { UseFormRegister, FieldValues } from "react-hook-form";
 import axios from "axios";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import ReactMarkdown from "react-markdown";
 import { toast } from "react-hot-toast";
@@ -16,6 +16,8 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Table } from "./components/Table";
 import Webcam from "react-webcam";
 import { Config } from "../../config";
+import Modal from "./components/Modal";
+import moment from "moment";
 
 const Modelpage: React.FC = () => {
   const toastId = React.useRef("");
@@ -27,22 +29,27 @@ const Modelpage: React.FC = () => {
     setValue,
   } = useForm();
   const { user } = useUser();
+  const navigate = useNavigate();
   const [model_data, setmodel_data] = React.useState(null);
   const [streaming, setStreaming] = React.useState(false);
-  const intervalref = React.useRef<number | null>(null);
   const [statusStreaming, setStatusStreaming] = React.useState(false);
   const [history, setHistory] = React.useState(false);
   const [history_data, setHistoryData] = React.useState([]);
-  const { model_id } = useParams();
-  const docker_version = React.useRef<HTMLSelectElement>(null);
+  const { model_id, version } = useParams();
   const [output, setoutput] = React.useState({ status: "default", data: "" });
   const [searchParams, setSearchParams] = useSearchParams();
+  const [modalReport, setModalReport] = React.useState(false);
+  const docker_version = React.useRef<HTMLSelectElement>(null);
+  const [streamUrl, setStreamUrl] = React.useState("");
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [intervalId, setIntervalId] = React.useState<number | null>(null);
   //Webcam
   const webcamRef = React.useRef<Webcam>(null);
 
   const fetchData = async () => {
     const response = await axios.get(
-      `${Config.REACT_APP_Backend_URL}model/${model_id}/`
+      `${Config.REACT_APP_Backend_URL}model/${model_id}/` +
+        (version ? version : "")
     );
     if (response) {
       setmodel_data(response.data);
@@ -51,17 +58,54 @@ const Modelpage: React.FC = () => {
 
   const fetchHistory = async () => {
     const response = await axios.get(
-      `${Config.REACT_APP_Backend_URL}model/output/${model_id}`
+      `${Config.REACT_APP_Backend_URL}model/output/${model_id}/`
     );
 
     if (response) setHistoryData(response.data !== null ? response.data : []);
+  };
+
+  const dataURItoBlob = (dataURI: string): Blob => {
+    // const byteString = window.atob(dataURI.split(",")[1]);
+    // const ab = new ArrayBuffer(byteString.length);
+    // const ia = new Uint8Array(ab);
+
+    // for (let i = 0; i < byteString.length; i++) {
+    //   ia[i] = byteString.charCodeAt(i);
+    // }
+
+    // return new Blob([ab], { type: 'image/jpeg' });
+
+    const byteString = window.atob(dataURI.split(",")[1]);
+
+    const uint8Array = new Uint8Array(byteString.length);
+
+    for (let i = 0; i < byteString.length; i++) {
+      uint8Array[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([uint8Array], { type: "image/jpeg" });
   };
 
   const manageInput = (
     listInput: [],
     register: UseFormRegister<FieldValues>
   ) => {
-    return listInput.map((data) => {
+    return listInput.map((data, index) => {
+      if (searchParams.get("ModelOutputID")) {
+        if (history_data) {
+          let history_input_data = history_data.filter(
+            (data) =>
+              data["ModelOutputID"] === searchParams.get("ModelOutputID")
+          )[0];
+          if (history_input_data) {
+            if (model_data)
+              data["default"] =
+                history_input_data["model_input_data"]["data_inputs"][index][
+                  "data"
+                ];
+          }
+        }
+      }
       switch (data["type"]) {
         case "str": {
           if (data["optional"]["choices"]) {
@@ -236,23 +280,15 @@ const Modelpage: React.FC = () => {
     });
   };
   //Webcam Upload Image
-  const postWebcam = React.useCallback(async () => {
+  const postWebcam = async () => {
     try {
       const imageSrc = webcamRef?.current?.getScreenshot();
-      //Base64 => Blob => File
-      var bs = window.atob(imageSrc ? imageSrc : "");
-      var buffer = new ArrayBuffer(bs.length);
-      var ba = new Uint8Array(buffer);
-      for (var i = 0; i < bs.length; i++) {
-        ba[i] = bs.charCodeAt(i);
-      }
-      var file = new Blob([ba], { type: "image/png" });
-      //Base64 => Blob => File
-
+      if (!imageSrc) return;
       //Post Uploader
-      let img = new FormData();
-      img.append("uploadFile", file);
-      const { status, data } = await axios.post(
+      const img = new FormData();
+      img.append("uploadFile", dataURItoBlob(imageSrc));
+
+      const response = await axios.post(
         `${Config.REACT_APP_Backend_URL}upload`,
         img,
         {
@@ -261,16 +297,14 @@ const Modelpage: React.FC = () => {
           },
         }
       );
-      if (status === 500 || status === 400) throw new Error(data["message"]);
-      //Post Uploader
-
-      const result =
-        `${Config.REACT_APP_Backend_URL}`.slice(0, -1) + data.image_url;
-      return result;
+      setStreamUrl(
+        `${Config.REACT_APP_Backend_URL}`.slice(0, -1) +
+          response.data["image_url"]
+      );
     } catch (error) {
       toast.error("Get Image to Server Error!");
     }
-  }, [webcamRef]);
+  };
 
   const onSubmit = handleSubmit(async (data) => {
     setHistory(false);
@@ -293,7 +327,7 @@ const Modelpage: React.FC = () => {
       const req = {
         data_inputs: data_inputs,
         model_id: model_id,
-        docker_image_id: docker_version.current?.value,
+        version: version ? version : model_data!["version"][0],
       };
 
       const response = await axios.post(
@@ -321,20 +355,14 @@ const Modelpage: React.FC = () => {
 
   //Streaming
   const postStreaming = async (data: FieldValues) => {
-    let imgUrl = await postWebcam();
-    const notify = () => (toastId.current = toast.loading("On Streaming..."));
-    notify();
-    setoutput({ status: "pending", data: "" });
     try {
       const data_inputs = Object.keys(data).map((key, index) => {
         return {
           name: key,
           data: model_data
-            ? streaming
-              ? model_data["input_detail"][index]["type"] === "image"
-                ? imgUrl
-                : data[key]
-              : data[key]
+            ? model_data["input_detail"][index]["type"] === "image"
+              ? streamUrl
+              : ""
             : "",
           type: model_data ? model_data["input_detail"][index]["type"] : "",
           model_input_detail_id: model_data
@@ -346,7 +374,7 @@ const Modelpage: React.FC = () => {
       const req = {
         data_inputs: data_inputs,
         model_id: model_id,
-        docker_image_id: docker_version.current?.value,
+        version: version ? version : model_data!["version"][0],
       };
 
       const response = await axios.post(
@@ -360,33 +388,36 @@ const Modelpage: React.FC = () => {
           `${Config.REACT_APP_Backend_URL}`.slice(0, -1) +
           response.data["output"],
       });
-      toast.dismiss(toastId.current);
       toast.success("Success!");
     } catch (error) {
-      setoutput({
-        status: "default",
-        data: "",
-      });
-      toast.dismiss(toastId.current);
-      toast.error("Error!");
+      toast.error("Error! Try again...");
     }
   };
 
   const onStreaming = handleSubmit(async (data) => {
-    setStatusStreaming(!statusStreaming);
-
-    if (statusStreaming && (intervalref.current === 0 || intervalref.current === null)) {
-      intervalref.current = window.setInterval(async () => {
-        await postStreaming(data);
-      }, 10000);
-    }
-
-    if (!statusStreaming) {
-      window.clearInterval(intervalref.current || 0);
-      toast.dismiss(toastId.current);
-      toast.success("Streaming Stop!")
-    }
+    setStatusStreaming(true);
+    const notify = () => (toastId.current = toast.loading("On Streaming..."));
+    notify();
+    setoutput({
+      status: "default",
+      data: "",
+    });
+    const id = window.setInterval(async () => {
+      await postWebcam();
+    }, 8000);
+    setIntervalId(id);
   });
+
+  const stopStreaming = () => {
+    // window.clearInterval(intervalref.current || 0);
+    if (intervalId) {
+      window.clearInterval(intervalId);
+      setIntervalId(null);
+    }
+    toast.dismiss(toastId.current);
+    toast.success("Streaming Stop!");
+    setStatusStreaming(false);
+  };
   type Item = {
     id: string;
     modelname: string;
@@ -446,31 +477,43 @@ const Modelpage: React.FC = () => {
     }
   };
 
+
   React.useEffect(() => {
     fetchData();
     fetchHistory();
+    setIsLoading(false);
   }, []);
 
   React.useEffect(() => {
-    if (history_data) {
-      let history_input_data = history_data.filter(
-        (data) => data["ModelOutputID"] === searchParams.get("ModelOutputID")
-      )[0];
-      if (history_input_data) {
-        (history_input_data["model_input_data"]["data_inputs"] as []).map(
-          (data) => {
-            if (data["type"] === "image") {
-              setValue(data["name"] as string, data["data"]);
-            } else setValue(data["name"], data["data"]);
-          }
-        );
-        setoutput({
-          status: "success",
-          data:
-            `${Config.REACT_APP_Backend_URL}`.slice(0, -1) +
-            history_input_data["output"],
-        });
-        setHistory(false);
+    if (streamUrl !== "") postStreaming(getValues());
+  }, [streamUrl]);
+
+  React.useEffect(() => {
+    fetchHistory();
+  }, [history]);
+
+  React.useEffect(() => {
+    if (searchParams.get("ModelOutputID")) {
+      if (history_data) {
+        let history_input_data = history_data.filter(
+          (data) => data["ModelOutputID"] === searchParams.get("ModelOutputID")
+        )[0];
+        if (history_input_data) {
+          (history_input_data["model_input_data"]["data_inputs"] as []).map(
+            (data) => {
+              if (data["type"] === "image") {
+                setValue(data["name"] as string, data["data"]);
+              } else setValue(data["name"], data["data"]);
+            }
+          );
+          setoutput({
+            status: "success",
+            data:
+              `${Config.REACT_APP_Backend_URL}`.slice(0, -1) +
+              history_input_data["output"],
+          });
+          setHistory(false);
+        }
       }
     }
   }, [searchParams]);
@@ -479,8 +522,22 @@ const Modelpage: React.FC = () => {
     getParam();
   }, [model_data]);
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+        <div className="mt-4 text-xl font-semibold">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-screen h-screen pt-16 pl-5 pr-5 overflow-x-hidden">
+      <Modal
+        id={model_id ? model_id : ""}
+        showModal={modalReport}
+        setShowModal={setModalReport}
+      />
       <div id="model" className="flex w-full basis-1/2 pt-2">
         <div id="input" className="flex flex-col w-1/2">
           <div className="flex justify-between pr-2">
@@ -495,17 +552,17 @@ const Modelpage: React.FC = () => {
                 Streaming Mode
               </button>
               {model_data ? (
-                <select className="text-center p-1" ref={docker_version}>
-                  {(model_data["docker_image_id"] as [])
-                    .slice(0)
-                    .reverse()
-                    .map((ver) => {
-                      return (
-                        <option value={ver}>
-                          {(ver as string).split(":")[1]}
-                        </option>
-                      );
-                    })}
+                <select
+                  className="text-center p-1"
+                  ref={docker_version}
+                  onChange={(e) => {
+                    navigate(`/model/${model_id}/${e.target.value}`);
+                  }}
+                  value={version ? version : model_data["version"][0]}
+                >
+                  {(model_data["version"] as []).map((ver) => {
+                    return <option value={ver}>{ver}</option>;
+                  })}
                 </select>
               ) : null}
             </div>
@@ -524,16 +581,37 @@ const Modelpage: React.FC = () => {
             )}
 
             {streaming ? (
-              <button
-                type="submit"
-                className="bg-sl-orange text-white p-2 pl-5 pr-5 rounded-full "
-              >
-                {statusStreaming ? "Stop" : "Start"}
-              </button>
+              <div className="flex flex-col gap-y-2">
+                <button
+                  type="submit"
+                  className={
+                    (statusStreaming ? "bg-gray-500" : "bg-sl-orange") +
+                    " text-white p-2 pl-5 pr-5 rounded-full "
+                  }
+                  disabled={statusStreaming}
+                >
+                  Start
+                </button>
+
+                <button
+                  type="button"
+                  className={
+                    (!statusStreaming ? "bg-gray-500" : "bg-sl-orange") +
+                    " text-white p-2 pl-5 pr-5 rounded-full "
+                  }
+                  disabled={!statusStreaming}
+                  onClick={() => {
+                    stopStreaming();
+                  }}
+                >
+                  Stop
+                </button>
+              </div>
             ) : (
               <button
                 type="submit"
                 className="bg-sl-orange text-white p-2 pl-5 pr-5 rounded-full "
+                disabled={output.status === "pending"}
               >
                 RUN
               </button>
@@ -612,13 +690,21 @@ const Modelpage: React.FC = () => {
               // </table>
               history_data ? (
                 <Table
-                  data={history_data.map((each) => {
-                    const obj = Object.assign({}, each);
-                    obj["output"] !== ""
-                      ? ((obj["output"] as string) = "success")
-                      : ((obj["output"] as string) = "failed");
-                    return obj;
-                  })}
+                  data={history_data
+                    .filter(
+                      (value) =>
+                        value["version"] === docker_version.current?.value
+                    )
+                    .map((each) => {
+                      const obj = Object.assign({}, each);
+                      obj["output"] !== ""
+                        ? ((obj["output"] as string) = "success")
+                        : ((obj["output"] as string) = "failed");
+                      (obj["created_at"] as string) = moment(
+                        obj["created_at"]
+                      ).format("DD MM YYYY hh:mm:ss");
+                      return obj;
+                    })}
                   columns={cols}
                   showNavigation={true}
                 />
@@ -663,21 +749,7 @@ const Modelpage: React.FC = () => {
                   toast.error("Please,Login Before Report!");
                   return;
                 }
-                console.log(user.id);
-                // try {
-                //   // const dataReport = {
-                //   //   user_id: data_inputs,
-                //   //   description: model_id,
-                //   //   model_id: model_id
-                //   // };
-                //   //  "user_id": "63fcd452f3c52be1440593c4",
-                //   //  "description":"report Problem",
-                //   //  "model_id":"63fcd452f3c52be1440593c4"
-                //   const response = await axios.post(
-                //     `${Config.REACT_APP_Backend_URL}predict/`,
-                //     dataReport
-                //   );
-                // } catch (error) {}
+                setModalReport(true);
               }}
               className="bg-black text-white p-2 pl-3 pr-3 rounded-full hover:bg-sl-orange"
             >

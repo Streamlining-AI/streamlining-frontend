@@ -14,6 +14,7 @@ const Card: React.FC<CardForm> = (props:CardForm) => {
       />
       <h3 className="text-2xl break-all truncate ">{props.author}\{props.name}</h3>
       <h4 className="break-all truncate">{props.desciption}</h4>
+      <h4 className='break-all truncate'> {}</h4>
     </a>
   );
 };

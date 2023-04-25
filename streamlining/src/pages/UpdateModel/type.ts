@@ -8,5 +8,6 @@ export interface FormUpload {
   description : string;
   github_code: string;
   model_version : string;
+  model_id: string;
   banner_url : any; // File then Str
 }

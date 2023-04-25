@@ -47,10 +47,10 @@ const ImageInput: React.FC<Props> = ({
   const readURL = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const target = event.target as HTMLInputElement;
     // const file = target.files![0];
-
     if (target.files && target.files[0]) {
       try {
         const url = await uploadImg(target.files);
+        if(url)
         setimgUploaded(url);
         setValue(name, url);
         return url;
@@ -62,9 +62,7 @@ const ImageInput: React.FC<Props> = ({
     }
   };
 
-  //Webcam
-  const webcamRef = webRef
-  // eslint-disable-next-line
+ 
   
 
   return (
@@ -74,11 +72,12 @@ const ImageInput: React.FC<Props> = ({
         <Webcam
           audio={false}
           height={canvasHeight}
-          ref={webcamRef}
-          screenshotFormat="image/png"
+          ref={webRef}
+          screenshotFormat="image/jpeg"
           width={canvasWidth}
           videoConstraints={videoConstraints}
           forceScreenshotSourceSize={true}
+          screenshotQuality={0.5}
           mirrored={true}
           minScreenshotHeight={resHeight}
           minScreenshotWidth={resWidth}

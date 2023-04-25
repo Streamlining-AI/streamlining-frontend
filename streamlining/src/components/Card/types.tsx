@@ -4,4 +4,5 @@ export interface CardForm{
     name : string;
     author : string;
     desciption : string;
+    predict_record_count : number;
 }
